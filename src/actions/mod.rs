@@ -9,3 +9,4 @@ pub mod move_cmd;
 pub mod paste;
 pub mod placeholders;
 pub mod show;
+pub mod status;

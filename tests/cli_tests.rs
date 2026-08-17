@@ -278,7 +278,7 @@ fn test_info_and_status() {
     assert_eq!(v["name"], "1");
     assert_eq!(v["contentType"], "text/plain");
 
-    // Status alias
+    // Status overview
     let output = Command::new(get_clb_bin())
         .env("CLIPBOARD_TMPDIR", tmp_path)
         .env("CLIPBOARD_NOGUI", "1")
@@ -286,6 +286,21 @@ fn test_info_and_status() {
         .output()
         .unwrap();
     assert!(output.status.success());
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("All your clipboards with content"));
+    assert!(stdout.contains("1 | sample test data"));
+
+    // Status JSON
+    let output = Command::new(get_clb_bin())
+        .env("CLIPBOARD_TMPDIR", tmp_path)
+        .env("CLIPBOARD_NOGUI", "1")
+        .args(["status", "--json"])
+        .output()
+        .unwrap();
+    assert!(output.status.success());
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let v: serde_json::Value = serde_json::from_str(&stdout).unwrap();
+    assert_eq!(v["1"], "sample test data");
 }
 
 #[test]

@@ -39,7 +39,7 @@ fn main() {
         Some(Commands::Cut { items }) => actions::cut::execute(&items, &config, &storage, &gui),
         Some(Commands::Edit) => actions::edit::execute(&config, &storage, &gui),
         Some(Commands::Info) => actions::info::execute(cli.json, &config, &storage),
-        Some(Commands::Status) => actions::info::execute(cli.json, &config, &storage),
+        Some(Commands::Status) => actions::status::execute(cli.json, &config, &gui),
         Some(Commands::Show { patterns }) => actions::show::execute(&patterns, &config, &storage),
         Some(Commands::Config) => actions::config::execute(cli.json, &config),
         Some(Commands::Completion { shell }) => actions::completion::execute(shell),
@@ -68,7 +68,7 @@ fn main() {
             } else if !utils::is_stdout_terminal() {
                 actions::paste::execute(&[], &config, &storage, &gui)
             } else {
-                actions::info::execute(cli.json, &config, &storage)
+                actions::status::execute(cli.json, &config, &gui)
             }
         }
     };
