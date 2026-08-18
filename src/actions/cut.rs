@@ -21,6 +21,7 @@ pub fn execute(
             // Cut files/directories
             storage.clear_data_dir().map_err(|e| e.to_string())?;
             let mut abs_paths = Vec::new();
+            let mut stored_paths = Vec::new();
 
             for item in items {
                 let src = Path::new(item);
@@ -34,6 +35,7 @@ pub fn execute(
 
                 utils::copy_recursive(src, &dst, config.fast_copy)
                     .map_err(|e| format!("Failed to copy {}: {}", item, e))?;
+                stored_paths.push(dst);
             }
 
             storage
@@ -42,7 +44,7 @@ pub fn execute(
             storage
                 .record_last_copied(&abs_paths)
                 .map_err(|e| e.to_string())?;
-            gui.set_files(&abs_paths);
+            gui.set_files(&stored_paths);
 
             if !config.silent && !config.no_confirmation {
                 println!("Cut {} item(s)", items.len());

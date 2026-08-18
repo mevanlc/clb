@@ -7,6 +7,7 @@ use serde::Serialize;
 use crate::config::Config;
 use crate::gui::GuiClipboard;
 use crate::storage::ClipboardStorage;
+use crate::utils;
 
 #[derive(Serialize)]
 #[serde(untagged)]
@@ -121,6 +122,22 @@ pub fn execute(json_output: bool, config: &Config, gui: &GuiClipboard) -> Result
 
 fn sync_gui_clipboard(config: &Config, gui: &GuiClipboard) {
     if !config.gui_enabled {
+        return;
+    }
+    if let Some(files) = gui.get_files()
+        && !files.is_empty()
+    {
+        let storage = ClipboardStorage::new(config);
+        let is_inside_storage = files.iter().all(|f| f.starts_with(&storage.data_dir));
+        if !is_inside_storage {
+            let _ = storage.clear_data_dir();
+            for src in &files {
+                if let Some(name) = src.file_name() {
+                    let dst = storage.data_dir.join(name);
+                    let _ = utils::copy_recursive(src, &dst, config.fast_copy);
+                }
+            }
+        }
         return;
     }
     if let Some(gui_text) = gui.get_text()

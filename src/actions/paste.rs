@@ -22,19 +22,32 @@ pub fn execute(
         patterns.iter().map(|p| Regex::new(p)).collect();
     let regexes = regexes.map_err(|e| format!("Invalid regex pattern: {}", e))?;
 
-    // Sync from GUI if storage has no data or GUI text is present
-    if !storage.holds_files()
-        && let Some(gui_text) = gui.get_text()
-    {
-        let stored = storage.get_raw_text();
-        match stored {
-            Some(stored_text) if gui_text != stored_text => {
-                let _ = storage.set_raw_text(&gui_text);
+    // Sync from GUI if storage has no data or GUI content is present
+    if !storage.holds_files() {
+        if let Some(files) = gui.get_files()
+            && !files.is_empty()
+        {
+            let is_inside_storage = files.iter().all(|f| f.starts_with(&storage.data_dir));
+            if !is_inside_storage {
+                let _ = storage.clear_data_dir();
+                for src in &files {
+                    if let Some(name) = src.file_name() {
+                        let dst = storage.data_dir.join(name);
+                        let _ = utils::copy_recursive(src, &dst, config.fast_copy);
+                    }
+                }
             }
-            None if !gui_text.is_empty() => {
-                let _ = storage.set_raw_text(&gui_text);
+        } else if let Some(gui_text) = gui.get_text() {
+            let stored = storage.get_raw_text();
+            match stored {
+                Some(stored_text) if gui_text != stored_text => {
+                    let _ = storage.set_raw_text(&gui_text);
+                }
+                None if !gui_text.is_empty() => {
+                    let _ = storage.set_raw_text(&gui_text);
+                }
+                _ => {}
             }
-            _ => {}
         }
     }
 
