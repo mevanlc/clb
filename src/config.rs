@@ -26,7 +26,7 @@ impl Config {
         silent: bool,
     ) -> Self {
         let name = clipboard_name
-            .unwrap_or_else(|| std::env::var("CLIPBOARD_NAME").unwrap_or_else(|_| "1".to_string()));
+            .unwrap_or_else(|| std::env::var("CLIPBOARD_NAME").unwrap_or_else(|_| "0".to_string()));
         let entry = clipboard_entry.unwrap_or(0);
 
         let temp_dir = if let Ok(val) = std::env::var("CLIPBOARD_TMPDIR") {

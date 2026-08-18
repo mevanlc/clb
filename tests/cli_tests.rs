@@ -262,7 +262,7 @@ fn test_info_and_status() {
         .unwrap();
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("+--- Clipboard 1"));
+    assert!(stdout.contains("+--- Clipboard 0"));
     assert!(stdout.contains("sample test data"));
 
     // JSON info
@@ -275,7 +275,7 @@ fn test_info_and_status() {
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     let v: serde_json::Value = serde_json::from_str(&stdout).unwrap();
-    assert_eq!(v["name"], "1");
+    assert_eq!(v["name"], "0");
     assert_eq!(v["contentType"], "text/plain");
 
     // Status overview
@@ -288,7 +288,7 @@ fn test_info_and_status() {
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("All your clipboards with content"));
-    assert!(stdout.contains("1 | sample test data"));
+    assert!(stdout.contains("0 | sample test data"));
 
     // Status JSON
     let output = Command::new(get_clb_bin())
@@ -300,7 +300,7 @@ fn test_info_and_status() {
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     let v: serde_json::Value = serde_json::from_str(&stdout).unwrap();
-    assert_eq!(v["1"], "sample test data");
+    assert_eq!(v["0"], "sample test data");
 }
 
 #[test]

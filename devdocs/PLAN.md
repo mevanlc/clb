@@ -9,7 +9,7 @@ clb - Rust port/reimplementation of a subset of ~/p/gh/clipboard/ (aka "cb")
 
 ## non-goals
 
-- multiple/virtual clipboards (for now); cb's clipboard 0 is clb's clipboard 1/default.
+- multiple/virtual clipboards (for now); clipboard 0 is clb's default.
 - any interaction with *nix "primary selection" (for now)
 - recreating cb's terminal output coloration
   - clb's output is unstyled and 7-bit ascii (for now)
