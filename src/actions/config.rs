@@ -36,20 +36,18 @@ pub fn execute(json_output: bool, config: &Config) -> Result<(), String> {
         return Ok(());
     }
 
-    let width: usize = 67;
-    let title = " Configuration ";
-    let bar_len = width.saturating_sub(title.len() + 5);
-    let top_bar = format!("+---{}+{}", title, "-".repeat(bar_len));
+    let separator = "-".repeat(67);
 
-    println!("{}", top_bar);
+    println!("Configuration");
+    println!("{}", separator);
     println!(
-        "| Content editor:        {}",
+        "Content editor:        {}",
         config.editor.as_deref().unwrap_or("None")
     );
-    println!("| Temporary directory:   {}", config.temp_dir.display());
-    println!("| Persistent directory:  {}", config.persist_dir.display());
+    println!("Temporary directory:   {}", config.temp_dir.display());
+    println!("Persistent directory:  {}", config.persist_dir.display());
     println!(
-        "| GUI integration:       {}",
+        "GUI integration:       {}",
         if config.gui_enabled {
             "enabled"
         } else {
@@ -57,21 +55,19 @@ pub fn execute(json_output: bool, config: &Config) -> Result<(), String> {
         }
     );
     println!(
-        "| Silent output:         {}",
+        "Silent output:         {}",
         if config.silent { "enabled" } else { "disabled" }
     );
     println!(
-        "| Fast copy:             {}",
+        "Fast copy:             {}",
         if config.fast_copy {
             "enabled"
         } else {
             "disabled"
         }
     );
-    println!("| Terminal styling:      7-bit ascii");
-
-    let bottom_bar = format!("+{}", "-".repeat(width.saturating_sub(1)));
-    println!("{}", bottom_bar);
+    println!("Terminal styling:      7-bit ascii");
+    println!("{}", separator);
 
     Ok(())
 }

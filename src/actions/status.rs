@@ -65,11 +65,9 @@ pub fn execute(json_output: bool, config: &Config, gui: &GuiClipboard) -> Result
         return Ok(());
     }
 
-    let width: usize = 70;
-    let title = " All your clipboards with content ";
-    let bar_len = width.saturating_sub(title.len() + 5);
-    let top_bar = format!("+---{}+{}", title, "-".repeat(bar_len));
-    println!("{}", top_bar);
+    let separator = "-".repeat(70);
+    println!("All your clipboards with content");
+    println!("{}", separator);
 
     let longest_name = clipboards.keys().map(|k| k.len()).max().unwrap_or(1);
 
@@ -109,13 +107,11 @@ pub fn execute(json_output: bool, config: &Config, gui: &GuiClipboard) -> Result
             "(empty)".to_string()
         };
 
-        println!("| {:>width$} | {}", name, preview, width = longest_name);
+        println!("{:>width$}   {}", name, preview, width = longest_name);
     }
 
-    let legend = " Legend: Text, Files, Directories, Data ";
-    let bot_bar_len = width.saturating_sub(legend.len() + 5);
-    let bottom_bar = format!("+---{}+{}", legend, "-".repeat(bot_bar_len));
-    println!("{}", bottom_bar);
+    println!("{}", separator);
+    println!("Legend: Text, Files, Directories, Data");
 
     Ok(())
 }

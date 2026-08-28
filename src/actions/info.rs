@@ -86,28 +86,22 @@ pub fn execute(
         return Ok(());
     }
 
-    // 7-bit ASCII Box Formatting
-    let width: usize = 67;
-    let title = format!(" Clipboard {} (Entry {}) ", storage.name, storage.entry);
-    let bar_len = width.saturating_sub(title.len() + 5);
-    let top_bar = format!("+---{}+{}", title, "-".repeat(bar_len));
+    let separator = "-".repeat(67);
 
-    println!("{}", top_bar);
-    println!("| Stored in:             {}", storage.root.display());
+    println!("Clipboard {} (Entry {})", storage.name, storage.entry);
+    println!("{}", separator);
+    println!("Stored in:             {}", storage.root.display());
     println!(
-        "| Persistent:            {}",
+        "Persistent:            {}",
         if is_persistent { "Yes" } else { "No" }
     );
-    println!("| Total entries:         {}", total_entries);
+    println!("Total entries:         {}", total_entries);
+    println!("Total clipboard size:  {}", utils::format_bytes(total_size));
     println!(
-        "| Total clipboard size:  {}",
-        utils::format_bytes(total_size)
-    );
-    println!(
-        "| Content size:          {}",
+        "Content size:          {}",
         utils::format_bytes(content_bytes)
     );
-    println!("| Content type:          {}", content_type);
+    println!("Content type:          {}", content_type);
 
     if let Some(preview) = text_preview {
         // Strip non-printable ascii
@@ -121,31 +115,30 @@ pub fn execute(
                 }
             })
             .collect();
-        println!("| Content preview:       {}", clean_preview);
+        println!("Content preview:       {}", clean_preview);
     }
 
     if let Some(fc) = file_count {
-        println!("| Files:                 {}", fc);
+        println!("Files:                 {}", fc);
     }
     if let Some(dc) = dir_count {
-        println!("| Directories:           {}", dc);
+        println!("Directories:           {}", dc);
     }
 
     println!(
-        "| Content cut:           {}",
+        "Content cut:           {}",
         if has_cut { "Yes" } else { "No" }
     );
     println!(
-        "| Locked:                {}",
+        "Locked:                {}",
         if is_locked { "Yes" } else { "No" }
     );
 
     if let Some(n) = note {
-        println!("| Note:                  {}", n.trim());
+        println!("Note:                  {}", n.trim());
     }
 
-    let bottom_bar = format!("+{}", "-".repeat(width.saturating_sub(1)));
-    println!("{}", bottom_bar);
+    println!("{}", separator);
 
     Ok(())
 }

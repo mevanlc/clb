@@ -245,29 +245,34 @@ fn test_clear_command() {
 fn test_info_and_status() {
     let tmp = create_temp_env();
     let tmp_path = tmp.path().to_str().unwrap();
+    let persist_path = tmp.path().join("persistent");
 
     Command::new(get_clb_bin())
         .env("CLIPBOARD_TMPDIR", tmp_path)
+        .env("CLIPBOARD_PERSISTDIR", &persist_path)
         .env("CLIPBOARD_NOGUI", "1")
         .args(["copy", "sample test data"])
         .output()
         .unwrap();
 
-    // ASCII info
+    // Human-readable info
     let output = Command::new(get_clb_bin())
         .env("CLIPBOARD_TMPDIR", tmp_path)
+        .env("CLIPBOARD_PERSISTDIR", &persist_path)
         .env("CLIPBOARD_NOGUI", "1")
         .args(["info"])
         .output()
         .unwrap();
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("+--- Clipboard 0"));
+    assert!(stdout.starts_with("Clipboard 0 (Entry 0)\n---"));
+    assert!(!stdout.lines().any(|line| line.starts_with(['+', '|'])));
     assert!(stdout.contains("sample test data"));
 
     // JSON info
     let output = Command::new(get_clb_bin())
         .env("CLIPBOARD_TMPDIR", tmp_path)
+        .env("CLIPBOARD_PERSISTDIR", &persist_path)
         .env("CLIPBOARD_NOGUI", "1")
         .args(["info", "--json"])
         .output()
@@ -278,9 +283,18 @@ fn test_info_and_status() {
     assert_eq!(v["name"], "0");
     assert_eq!(v["contentType"], "text/plain");
 
+    Command::new(get_clb_bin())
+        .env("CLIPBOARD_TMPDIR", tmp_path)
+        .env("CLIPBOARD_PERSISTDIR", &persist_path)
+        .env("CLIPBOARD_NOGUI", "1")
+        .args(["--clipboard", "longer-name", "copy", "second value"])
+        .output()
+        .unwrap();
+
     // Status overview
     let output = Command::new(get_clb_bin())
         .env("CLIPBOARD_TMPDIR", tmp_path)
+        .env("CLIPBOARD_PERSISTDIR", &persist_path)
         .env("CLIPBOARD_NOGUI", "1")
         .args(["status"])
         .output()
@@ -288,11 +302,22 @@ fn test_info_and_status() {
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("All your clipboards with content"));
-    assert!(stdout.contains("0 | sample test data"));
+    assert!(
+        stdout
+            .lines()
+            .any(|line| line == "          0   sample test data")
+    );
+    assert!(
+        stdout
+            .lines()
+            .any(|line| line == "longer-name   second value")
+    );
+    assert!(!stdout.lines().any(|line| line.starts_with(['+', '|'])));
 
     // Status JSON
     let output = Command::new(get_clb_bin())
         .env("CLIPBOARD_TMPDIR", tmp_path)
+        .env("CLIPBOARD_PERSISTDIR", &persist_path)
         .env("CLIPBOARD_NOGUI", "1")
         .args(["status", "--json"])
         .output()
@@ -341,7 +366,8 @@ fn test_config_command() {
         .unwrap();
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("+--- Configuration"));
+    assert!(stdout.starts_with("Configuration\n---"));
+    assert!(!stdout.lines().any(|line| line.starts_with(['+', '|'])));
     assert!(stdout.contains("7-bit ascii"));
 
     let output = Command::new(get_clb_bin())
